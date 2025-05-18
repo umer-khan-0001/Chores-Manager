@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  web_ci:
+    build: .
+    container_name: web_task_manager_ci
+    ports:
+      - "8081:80"
+    depends_on:
+      - db_ci
+    volumes:
+      - ./task_manager_ci:/var/www/html
+    networks:
+      - app-network
+
+  db_ci:
+    image: mysql:5.7
+    container_name: db_task_manager_ci
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: task_manager
+      MYSQL_USER: task_user
+      MYSQL_PASSWORD: Task@123
+    volumes:
+      - db_data_ci:/var/lib/mysql
+      - ./task_manager_ci/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+volumes:
+  db_data_ci:
+
+networks:
+  app-network:
